@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-
+import dotenv from "dotenv";
+dotenv.config();
 const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  "mongodb+srv://Fahim_Admin:arkotoO0_@mongobasics-cluster.xxxwrvw.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@mongobasics-cluster.xxxwrvw.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
