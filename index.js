@@ -52,17 +52,16 @@ app.post("/tasks", async (req, res) => {
 });
 
 app.put("/task-update", async (req, res) => {
-  const { id, taskName, description, image, deadline } = req.body;
+  const { id, taskName, description, image, deadline, completed } = req.body;
   // const
   let updatedDoc;
-  console.log(!image);
 
   if (!image) {
-    updatedDoc = { taskName, description, deadline };
+    updatedDoc = { taskName, description, deadline, completed };
   } else {
-    updatedDoc = { taskName, description, deadline, image };
+    updatedDoc = { taskName, description, deadline, completed, image };
   }
-  console.log(updatedDoc);
+
   const response = await allTasksCollection.updateOne(
     { _id: ObjectId(id) },
     {
@@ -159,18 +158,13 @@ app.put("/task-not-completed", async (req, res) => {
 app.get("/task/:id", async (req, res) => {
   const { id } = req.params;
 
-  console.log(req.params);
-
   const response = await allTasksCollection.findOne({ _id: ObjectId(id) });
 
   res.send(response);
 });
-
-app.listen(port);
-
 app.delete("/task", async (req, res) => {
   const { id } = req.body;
-  console.log(id);
+
   const response = await allTasksCollection.deleteOne({ _id: ObjectId(id) });
   res.send(response);
 });
@@ -185,3 +179,47 @@ app.put("/add-comment", async (req, res) => {
 
   res.send(response);
 });
+
+app.put("/update-comment", async (req, res) => {
+  const { id, commentToUpdate, updatedComment } = req.body;
+
+  const response = await allTasksCollection.updateOne(
+    {
+      _id: ObjectId(id),
+      "comment.comment": commentToUpdate,
+    },
+    {
+      $set: {
+        "comment.$.comment": updatedComment,
+      },
+    },
+    { upsert: true }
+  );
+  res.send(response);
+});
+app.delete("/delete-comment", async (req, res) => {
+  const { id, commentToDelete } = req.body;
+
+  const response = await allTasksCollection.updateOne(
+    {
+      _id: ObjectId(id),
+    },
+    {
+      $pull: {
+        comment: { comment: commentToDelete },
+      },
+    }
+  );
+
+  res.send(response);
+});
+
+app.get("/task-images", async (req, res) => {
+  const response = await allTasksCollection
+    .find({})
+    .project({ image: 1 })
+    .toArray();
+
+  res.send(response);
+});
+app.listen(port);
