@@ -23,15 +23,17 @@ app.get("/", async (req, res) => {
   res.send("Daily Task SERVER Running");
 });
 app.get("/tasks", async (req, res) => {
+  const email = req.query?.email;
   const response = await allTasksCollection
-    .find({})
+    .find({ userEmail: email })
     .sort({ addedon: -1 })
     .toArray();
+
   res.send(response);
 });
 app.post("/tasks", async (req, res) => {
   const data = req.body;
-
+  console.log(data);
   const date = new Date();
   const today = date.toLocaleDateString("en-US", {
     second: "numeric",
@@ -55,7 +57,7 @@ app.put("/task-update", async (req, res) => {
   const { id, taskName, description, image, deadline, completed } = req.body;
   // const
   let updatedDoc;
-
+  console.log(userEmail);
   if (!image) {
     updatedDoc = { taskName, description, deadline, completed };
   } else {
@@ -74,8 +76,9 @@ app.put("/task-update", async (req, res) => {
 });
 
 app.put("/tasks", async (req, res) => {
-  let { id, taskName, description, deadline, image } = req.body;
+  let { id, taskName, description, deadline, image, userEmail } = req.body;
   let response;
+  console.log(userEmail);
   const date = new Date();
   const today = date.toLocaleDateString("en-US", {
     second: "numeric",
@@ -113,6 +116,7 @@ app.put("/tasks", async (req, res) => {
       deadline,
       completed,
       addedon,
+      userEmail,
     });
   }
 
@@ -215,11 +219,12 @@ app.delete("/delete-comment", async (req, res) => {
 });
 
 app.get("/task-images", async (req, res) => {
+  const email = req.query?.email;
   const response = await allTasksCollection
-    .find({})
+    .find({ userEmail: email })
     .project({ image: 1 })
     .toArray();
-
+  console.log(response);
   res.send(response);
 });
 app.listen(port);
