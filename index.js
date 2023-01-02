@@ -33,7 +33,7 @@ app.get("/tasks", async (req, res) => {
 });
 app.post("/tasks", async (req, res) => {
   const data = req.body;
-  console.log(data);
+
   const date = new Date();
   const today = date.toLocaleDateString("en-US", {
     second: "numeric",
@@ -57,7 +57,7 @@ app.put("/task-update", async (req, res) => {
   const { id, taskName, description, image, deadline, completed } = req.body;
   // const
   let updatedDoc;
-  console.log(userEmail);
+
   if (!image) {
     updatedDoc = { taskName, description, deadline, completed };
   } else {
@@ -78,7 +78,7 @@ app.put("/task-update", async (req, res) => {
 app.put("/tasks", async (req, res) => {
   let { id, taskName, description, deadline, image, userEmail } = req.body;
   let response;
-  console.log(userEmail);
+
   const date = new Date();
   const today = date.toLocaleDateString("en-US", {
     second: "numeric",
@@ -224,7 +224,7 @@ app.get("/task-images", async (req, res) => {
     .find({ userEmail: email })
     .project({ image: 1 })
     .toArray();
-  console.log(response);
+
   res.send(response);
 });
 app.listen(port);
